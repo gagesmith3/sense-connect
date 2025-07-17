@@ -4,7 +4,7 @@ import threading
 from sensor.sensor import SensorManager
 from network.socketio_client import SocketIOClient
 from config.config_manager import ConfigManager
-from network.alert import AlertManager
+# from network.alert import AlertManager
 from storage.database_manager import DatabaseManager
 import subprocess
 import json
