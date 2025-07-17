@@ -53,6 +53,8 @@ class SocketIOClient:
             self.last_connection_error_logged = False
             print("SocketIOClient: Connected to server.")
             self.sio.emit('test', {'message': 'Hello from RPi'})
+            self.send_header_status('ONLINE')
+            self.send_header_update(0)
 
         @self.sio.event
         def disconnect():
