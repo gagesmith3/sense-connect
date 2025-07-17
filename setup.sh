@@ -24,6 +24,7 @@ source venv/bin/activate
 pip install --upgrade pip
 pip install python-socketio==5.11.2
 pip install PyJWT
+pip install requests
 pip install -r requirements.txt
 
 # Optionally, run main.py after setup (in the virtual environment)
