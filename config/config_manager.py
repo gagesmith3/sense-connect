@@ -6,13 +6,13 @@ class ConfigManager:
         self.config_path = config_path
         self.sensor_pin = 17
         self.backup_increment = 1
-        self.socketio_server_url = 'http://localhost:3000'
+        self.socketio_server_url = 'http://192.168.1.6:3000'
         self.sensor_poll_interval = 1
         self.config_update_interval = 60
-        self.db_host = 'localhost'
-        self.db_user = 'user'
-        self.db_password = 'password'
-        self.db_name = 'database'
+        self.db_host = '192.168.1.6'
+        self.db_user = 'webapp'
+        self.db_password = 'Studs2650!'
+        self.db_name = 'iwt_post'
         self.machine_id = 'default-machine'
         self.load()
 
