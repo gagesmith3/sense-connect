@@ -11,15 +11,7 @@ import json
 import os
 
 
-# Check for code updates from git repo
-def update_code():
-    try:
-        result = subprocess.run(["git", "pull"], cwd=os.path.dirname(__file__), capture_output=True, text=True)
-        print(f"Code update: {result.stdout}")
-    except Exception as e:
-        print(f"Code update failed: {e}")
 
-update_code()
 
 # Initialize config
 config = ConfigManager()
@@ -32,7 +24,7 @@ sensor = SensorManager(config)
 socket_client = SocketIOClient(config)
 
 # Initialize alert manager
-alert_manager = AlertManager(config)
+#alert_manager = AlertManager(config)
 
 # Initialize database manager
 db_manager = DatabaseManager(config)
@@ -62,8 +54,8 @@ def sensor_loop():
         sensor.update_count()
         socket_client.send_live_count(sensor.count)
         if not sensor.is_active():
-            alert_manager.send_downtime_alert()
-        time.sleep(config.sensor_poll_interval)
+            #alert_manager.send_downtime_alert()
+            time.sleep(config.sensor_poll_interval)
 
 
 def config_update_loop():
