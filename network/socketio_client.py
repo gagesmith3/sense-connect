@@ -1,13 +1,14 @@
 import socketio
 import threading
 import time
+import jwt
 
 class SocketIOClient:
     def __init__(self, config):
         self.config = config
         self.sio = socketio.Client()
         self.server_url = getattr(config, 'socketio_server_url', 'http://192.168.1.6:3000')
-        self.jwt_token = getattr(config, 'jwt_token', '2b1e4f8c9d6a7b3e5c1f0a8d7e6b4c2a1f9e8d7c6b5a4e3d2c1b0a9e8d7c6b5')
+        self.jwt_secret = getattr(config, 'jwt_token', '2b1e4f8c9d6a7b3e5c1f0a8d7e6b4c2a1f9e8d7c6b5a4e3d2c1b0a9e8d7c6b5')
         self.connected = False
         self.last_connection_error_logged = False
         self._setup_handlers()
@@ -19,6 +20,7 @@ class SocketIOClient:
             self.connected = True
             self.last_connection_error_logged = False
             print("SocketIOClient: Connected to server.")
+            self.sio.emit('test', {'message': 'Hello from RPi'})
 
         @self.sio.event
         def disconnect():
@@ -40,7 +42,9 @@ class SocketIOClient:
         def run():
             while True:
                 try:
-                    self.sio.connect(self.server_url, auth={'token': self.jwt_token})
+                    payload = {'machine_id': getattr(self.config, 'machine_id', 'test-machine')}
+                    token = jwt.encode(payload, self.jwt_secret, algorithm='HS256')
+                    self.sio.connect(self.server_url, auth={'token': token})
                     break
                 except Exception as e:
                     print(f"SocketIOClient: Connection error, retrying in 5s. Error: {e}")
