@@ -15,11 +15,16 @@ if [ -d .git ]; then
     git pull
 fi
 
-# Install Python dependencies
-pip3 install --upgrade pip
-pip3 install -r requirements.txt
 
-# Optionally, run main.py after setup
-python3 main.py
+# Create and activate Python virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install Python dependencies in the virtual environment
+pip install --upgrade pip
+pip install -r requirements.txt
+
+# Optionally, run main.py after setup (in the virtual environment)
+python main.py
 
 echo "Setup complete."
