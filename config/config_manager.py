@@ -13,7 +13,7 @@ class ConfigManager:
         self.db_user = 'webapp'
         self.db_password = 'Studs2650!'
         self.db_name = 'iwt_post'
-        self.machine_id = 'default-machine'
+        self.machine_id = '1'
         self.load()
 
     def load(self):

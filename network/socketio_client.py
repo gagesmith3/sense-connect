@@ -4,6 +4,33 @@ import time
 import jwt
 
 class SocketIOClient:
+    def send_header_status(self, status):
+        if self.connected:
+            try:
+                self.sio.emit('header-status', {
+                    'machine_id': self.config.machine_id,
+                    'status': status
+                })
+                print(f"SocketIOClient: Sent header-status: {status}")
+            except Exception as e:
+                print(f"SocketIOClient: Emit error (header-status): {e}")
+        elif not self.last_connection_error_logged:
+            print("SocketIOClient: Not connected, cannot send header-status.")
+            self.last_connection_error_logged = True
+
+    def send_header_update(self, data):
+        if self.connected:
+            try:
+                self.sio.emit('header-update', {
+                    'machine_id': self.config.machine_id,
+                    'data': data
+                })
+                print(f"SocketIOClient: Sent header-update: {data}")
+            except Exception as e:
+                print(f"SocketIOClient: Emit error (header-update): {e}")
+        elif not self.last_connection_error_logged:
+            print("SocketIOClient: Not connected, cannot send header-update.")
+            self.last_connection_error_logged = True
     def __init__(self, config):
         self.config = config
         self.sio = socketio.Client()
