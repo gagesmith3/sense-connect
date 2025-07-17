@@ -1,0 +1,4 @@
+RPi.GPIO
+python-socketio
+psycopg2
+schedule
