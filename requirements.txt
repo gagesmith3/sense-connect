@@ -1,4 +1,4 @@
 RPi.GPIO
-python-socketio
+python-socketio==5.11.2
 psycopg2
 schedule

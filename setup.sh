@@ -22,6 +22,7 @@ source venv/bin/activate
 
 # Install Python dependencies in the virtual environment
 pip install --upgrade pip
+pip install python-socketio==5.11.2
 pip install -r requirements.txt
 
 # Optionally, run main.py after setup (in the virtual environment)

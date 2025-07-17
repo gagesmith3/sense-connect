@@ -8,6 +8,7 @@ class SocketIOClient:
         self.sio = socketio.Client()
         self.server_url = getattr(config, 'socketio_server_url', 'http://192.168.1.6:3000')
         self.connected = False
+        self.last_connection_error_logged = False
         self._setup_handlers()
         self._connect()
 
@@ -15,6 +16,7 @@ class SocketIOClient:
         @self.sio.event
         def connect():
             self.connected = True
+            self.last_connection_error_logged = False
             print("SocketIOClient: Connected to server.")
 
         @self.sio.event
@@ -24,7 +26,9 @@ class SocketIOClient:
 
         @self.sio.event
         def connect_error(data):
-            print(f"SocketIOClient: Connection failed: {data}")
+            if not self.last_connection_error_logged:
+                print(f"SocketIOClient: Connection failed: {data}")
+                self.last_connection_error_logged = True
 
         @self.sio.on('config_update')
         def on_config_update(data):
@@ -49,5 +53,7 @@ class SocketIOClient:
                 print(f"SocketIOClient: Sent live count {count}")
             except Exception as e:
                 print(f"SocketIOClient: Emit error: {e}")
-        else:
+        # Only log not connected once per disconnect
+        elif not self.last_connection_error_logged:
             print("SocketIOClient: Not connected, cannot send count.")
+            self.last_connection_error_logged = True
