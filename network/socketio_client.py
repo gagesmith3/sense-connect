@@ -60,6 +60,7 @@ class SocketIOClient:
         def disconnect():
             self.connected = False
             print("SocketIOClient: Disconnected from server.")
+            self.send_header_status('OFFLINE')
 
         @self.sio.event
         def connect_error(data):
@@ -90,9 +91,9 @@ class SocketIOClient:
             try:
                 self.sio.emit('live_count', {'count': count})
                 print(f"SocketIOClient: Sent live count {count}")
+                self.send_header_update(count)
             except Exception as e:
                 print(f"SocketIOClient: Emit error: {e}")
-        # Only log not connected once per disconnect
         elif not self.last_connection_error_logged:
             print("SocketIOClient: Not connected, cannot send count.")
             self.last_connection_error_logged = True
