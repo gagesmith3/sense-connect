@@ -28,10 +28,15 @@ pip install requests
 pip install rich
 pip install -r requirements.txt
 
-#setup systemd service
+### Ensure launcher.sh activates venv before running main.py
+cat > /home/iwt/sense-connect/launcher.sh <<'EOF'
+#!/bin/bash
+source /home/iwt/sense-connect/venv/bin/activate
+python /home/iwt/sense-connect/main.py
+EOF
+chmod +x /home/iwt/sense-connect/launcher.sh
 
 # Make launcher.sh executable
-chmod +x /home/iwt/sense-connect/launcher.sh
 # Add cron @reboot job to auto-launch launcher.sh on boot
 (crontab -l 2>/dev/null; echo "@reboot /bin/bash /home/iwt/sense-connect/launcher.sh") | crontab -
 
@@ -48,5 +53,14 @@ EOL
 sudo systemctl daemon-reload
 sudo systemctl restart getty@tty1
 
-python wrapper.py
+# Add dashboard autolaunch to .bash_profile for user 'iwt' (only on tty1)
+PROFILE="/home/iwt/.bash_profile"
+if ! grep -q 'dashboard.py' "$PROFILE"; then
+    echo '' >> "$PROFILE"
+    echo 'if [ "$(tty)" = "/dev/tty1" ]; then' >> "$PROFILE"
+    echo '    /home/iwt/sense-connect/venv/bin/python /home/iwt/sense-connect/dashboard.py' >> "$PROFILE"
+    echo 'fi' >> "$PROFILE"
+fi
+
+### Removed deprecated wrapper.py launch
 
