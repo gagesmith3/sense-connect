@@ -11,3 +11,7 @@ source venv/bin/activate
 
 # Launch main.py
 python main.py
+
+sleep 10
+
+python dashboard.py

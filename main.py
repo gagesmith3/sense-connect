@@ -36,23 +36,23 @@ socket_client = SocketIOClient(config)
 db_manager = DatabaseManager(config)
 
 # Local cache for hard counts
-HARD_COUNT_CACHE = 'hard_count_cache.json'
-def cache_hard_count(machine_id, count, timestamp):
-    cache = []
-    if os.path.exists(HARD_COUNT_CACHE):
-        with open(HARD_COUNT_CACHE, 'r') as f:
-            cache = json.load(f)
-    cache.append({'machine_id': machine_id, 'count': count, 'timestamp': timestamp})
-    with open(HARD_COUNT_CACHE, 'w') as f:
-        json.dump(cache, f)
+#HARD_COUNT_CACHE = 'hard_count_cache.json'
+#def cache_hard_count(machine_id, count, timestamp):
+    #cache = []
+    #if os.path.exists(HARD_COUNT_CACHE):
+       # with open(HARD_COUNT_CACHE, 'r') as f:
+           # cache = json.load(f)
+   # cache.append({'machine_id': machine_id, 'count': count, 'timestamp': timestamp})
+   # with open(HARD_COUNT_CACHE, 'w') as f:
+       # json.dump(cache, f)
 
-def flush_hard_count_cache():
-    if os.path.exists(HARD_COUNT_CACHE):
-        with open(HARD_COUNT_CACHE, 'r') as f:
-            cache = json.load(f)
-        for entry in cache:
-            db_manager.insert_sensor_data(entry['machine_id'], entry['count'], entry['timestamp'])
-        os.remove(HARD_COUNT_CACHE)
+#def flush_hard_count_cache():
+    #if os.path.exists(HARD_COUNT_CACHE):
+        #with open(HARD_COUNT_CACHE, 'r') as f:
+            #cache = json.load(f)
+       # for entry in cache:
+            #db_manager.insert_sensor_data(entry['machine_id'], entry['count'], entry['timestamp'])
+        #os.remove(HARD_COUNT_CACHE)
 
 
 def sensor_loop():
@@ -92,9 +92,9 @@ def health_report_loop():
 
 
 if __name__ == "__main__":
-    flush_hard_count_cache()
+    #flush_hard_count_cache()
     threading.Thread(target=sensor_loop, daemon=True).start()
     threading.Thread(target=config_update_loop, daemon=True).start()
     threading.Thread(target=hard_count_loop, daemon=True).start()
     threading.Thread(target=health_report_loop, daemon=True).start()
-    show_dashboard(get_live_status)
+    #show_dashboard(get_live_status)
