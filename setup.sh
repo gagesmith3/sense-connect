@@ -28,7 +28,27 @@ pip install requests
 pip install rich
 pip install -r requirements.txt
 
-# Optionally, run main.py after setup (in the virtual environment)
-python wrapper.py
+#setup systemd service
+chmod +x /home/iwt/sense-connect/launcher.sh
+# Create systemd service file
+sudo tee /etc/systemd/system/sense-connect.service > /dev/null <<EOL
+[Unit]
+Description=Sense Connect Service
+After=network.target
+[Service]
+ExecStart=/bin/bash /home/iwt/sense-connect/launcher.sh
+WorkingDirectory=/home/iwt/sense-connect
+Restart=always
+User=iwt
+Group=iwt
+[Install]
+WantedBy=multi-user.target
+EOL
+# Enable and start the service
+sudo systemctl enable sense-connect
+sudo systemctl start sense-connect
 
 echo "Setup complete."
+
+python wrapper.py
+
