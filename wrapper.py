@@ -11,6 +11,17 @@ def run_counting_app():
     return subprocess.Popen(['python3', 'main.py'])
 
 def show_dashboard():
+    logo = '''
+
+   __________  _   ___   ____________________
+  / ____/ __ \/ | / / | / / ____/ ____/_  __/
+ / /   / / / /  |/ /  |/ / __/ / /     / /   
+/ /___/ /_/ / /|  / /|  / /___/ /___  / /    
+\____/\____/_/ |_/_/ |_/_____/\____/ /_/     
+                                             
+
+    '''
+    console.print(logo, style="bold magenta")
     table = Table(title="Sense-Connect Debug Dashboard")
     table.add_column("Status")
     table.add_row("Running")
