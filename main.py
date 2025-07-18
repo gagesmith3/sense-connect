@@ -1,7 +1,7 @@
 # sense-connect main entry point
 import time
 import threading
-from sensor.sensor import SensorManager
+from sensor import SensorManager
 from network.socketio_client import SocketIOClient
 from config.config_manager import ConfigManager
 # from network.alert import AlertManager
