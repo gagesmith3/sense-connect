@@ -1,3 +1,56 @@
+# Add Rich dashboard imports
+from rich.console import Console
+from rich.live import Live
+from rich.table import Table
+
+console = Console()
+
+def show_dashboard(get_status_func):
+    logo = '''
+
+   __________________________________________
+  / ____/ __ \/ | / / | / / ____/ ____/_  __/
+ / /   / / / /  |/ /  |/ / __/ / /     / /   
+/ /___/ /_/ / /|  / /|  / /___/ /___  / /    
+\____/\____/_/ |_/_/ |_/_____/\____/ /_/     
+                                             
+
+    '''
+    console.print(logo, style="bold magenta")
+    table = Table(title="Sense-Connect Debug Dashboard")
+    table.add_column("Machine ID", justify="center")
+    table.add_column("Online", justify="center")
+    table.add_column("Connectivity", justify="center")
+    table.add_column("Count", justify="center")
+    table.add_column("Status", justify="center")
+    table.add_column("Last Update", justify="center")
+
+    with Live(table, refresh_per_second=2):
+        while True:
+            status = get_status_func()
+            table.rows.clear()
+            if status:
+                table.add_row(
+                    str(status["machine_id"]),
+                    "✅" if status["online"] else "❌",
+                    "Connected" if status["connectivity"] else "Disconnected",
+                    str(status["count"]),
+                    status["status"],
+                    status["last_update"]
+                )
+            else:
+                table.add_row("-", "-", "-", "-", "-", "-")
+            time.sleep(1)
+# Helper to get live status from app variables
+def get_live_status():
+    return {
+        "machine_id": config.machine_id,
+        "online": sensor.is_active(),
+        "connectivity": socket_client.connected,
+        "count": sensor.count,
+        "status": "ACTIVE" if sensor.is_active() else "INACTIVE",
+        "last_update": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(int(time.time())))
+    }
 # sense-connect main entry point
 import time
 import threading
@@ -82,16 +135,9 @@ def health_report_loop():
 
 
 if __name__ == "__main__":
-    # Flush any cached hard counts on startup
     flush_hard_count_cache()
-    # Start sensor loop in a thread
     threading.Thread(target=sensor_loop, daemon=True).start()
-    # Start config update loop in a thread
     threading.Thread(target=config_update_loop, daemon=True).start()
-    # Start hard count upload loop in a thread
     threading.Thread(target=hard_count_loop, daemon=True).start()
-    # Start health report loop in a thread
     threading.Thread(target=health_report_loop, daemon=True).start()
-    # Keep main thread alive
-    while True:
-        time.sleep(60)
+    show_dashboard(get_live_status)

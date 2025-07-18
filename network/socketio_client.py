@@ -12,12 +12,11 @@ class SocketIOClient:
                     'machine_id': machine_id,
                     'status': status
                 })
-                print(f"SocketIOClient: Sent header-status: {status}")
             except Exception as e:
-                print(f"SocketIOClient: Emit error (header-status): {e}")
+                pass
         elif not self.last_connection_error_logged:
-            print("SocketIOClient: Not connected, cannot send header-status.")
             self.last_connection_error_logged = True
+            pass
 
     def send_header_update(self, count, extra_data=None):
         machine_id = int(self.config.machine_id)
@@ -30,12 +29,11 @@ class SocketIOClient:
                     'machine_id': machine_id,
                     'data': data
                 })
-                print(f"SocketIOClient: Sent header-update: {data}")
             except Exception as e:
-                print(f"SocketIOClient: Emit error (header-update): {e}")
+                pass
         elif not self.last_connection_error_logged:
-            print("SocketIOClient: Not connected, cannot send header-update.")
             self.last_connection_error_logged = True
+            pass
     def __init__(self, config):
         self.config = config
         self.sio = socketio.Client()
@@ -51,7 +49,6 @@ class SocketIOClient:
         def connect():
             self.connected = True
             self.last_connection_error_logged = False
-            print("SocketIOClient: Connected to server.")
             self.sio.emit('test', {'message': 'Hello from RPi'})
             self.send_header_status('ONLINE')
             self.send_header_update(0)
@@ -59,18 +56,15 @@ class SocketIOClient:
         @self.sio.event
         def disconnect():
             self.connected = False
-            print("SocketIOClient: Disconnected from server.")
             self.send_header_status('OFFLINE')
 
         @self.sio.event
         def connect_error(data):
             if not self.last_connection_error_logged:
-                print(f"SocketIOClient: Connection failed: {data}")
                 self.last_connection_error_logged = True
 
         @self.sio.on('config_update')
         def on_config_update(data):
-            print(f"SocketIOClient: Received config update: {data}")
             self.config.update_from_server(data)
 
     def _connect(self):
@@ -82,7 +76,7 @@ class SocketIOClient:
                     self.sio.connect(self.server_url, auth={'token': token})
                     break
                 except Exception as e:
-                    print(f"SocketIOClient: Connection error, retrying in 5s. Error: {e}")
+                    pass
                     time.sleep(5)
         threading.Thread(target=run, daemon=True).start()
 
@@ -90,10 +84,9 @@ class SocketIOClient:
         if self.connected:
             try:
                 self.sio.emit('live_count', {'count': count})
-                print(f"SocketIOClient: Sent live count {count}")
                 self.send_header_update(count)
             except Exception as e:
-                print(f"SocketIOClient: Emit error: {e}")
+                pass
         elif not self.last_connection_error_logged:
-            print("SocketIOClient: Not connected, cannot send count.")
             self.last_connection_error_logged = True
+            pass

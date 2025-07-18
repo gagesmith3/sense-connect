@@ -9,5 +9,5 @@ fi
 # Activate virtual environment
 source venv/bin/activate
 
-# Launch wrapper (which launches main.py)
-python wrapper.py
+# Launch main.py
+python main.py
