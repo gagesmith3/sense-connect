@@ -50,5 +50,16 @@ sudo systemctl start sense-connect
 
 echo "Setup complete."
 
+
+# Enable console auto-login for user 'iwt'
+sudo mkdir -p /etc/systemd/system/getty@tty1.service.d
+sudo tee /etc/systemd/system/getty@tty1.service.d/autologin.conf > /dev/null <<EOL
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin iwt --noclear %I $TERM
+EOL
+sudo systemctl daemon-reload
+sudo systemctl restart getty@tty1
+
 python wrapper.py
 
