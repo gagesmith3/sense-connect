@@ -25,9 +25,10 @@ pip install --upgrade pip
 pip install python-socketio==5.11.2
 pip install PyJWT
 pip install requests
+pip install rich
 pip install -r requirements.txt
 
 # Optionally, run main.py after setup (in the virtual environment)
-python main.py
+python wrapper.py
 
 echo "Setup complete."
