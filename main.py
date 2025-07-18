@@ -16,7 +16,8 @@ def show_dashboard(get_status_func):
                                              
 
     '''
-    console.print(logo, style="bold magenta")
+    console.clear()
+    console.print(logo, style="bold green")
     table = Table(title="Sense-Connect Debug Dashboard")
     table.add_column("Machine ID", justify="center")
     table.add_column("Online", justify="center")
@@ -104,7 +105,10 @@ def flush_hard_count_cache():
 
 def sensor_loop():
     while True:
+        prev_count = sensor.count
         sensor.update_count()
+        if sensor.count != prev_count:
+            print(f"[DEBUG] Sending count {sensor.count} to socket service.")
         socket_client.send_live_count(sensor.count)
         if not sensor.is_active():
             #alert_manager.send_downtime_alert()

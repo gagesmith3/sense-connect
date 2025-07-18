@@ -29,24 +29,11 @@ pip install rich
 pip install -r requirements.txt
 
 #setup systemd service
+
+# Make launcher.sh executable
 chmod +x /home/iwt/sense-connect/launcher.sh
-# Create systemd service file
-sudo tee /etc/systemd/system/sense-connect.service > /dev/null <<EOL
-[Unit]
-Description=Sense Connect Service
-After=network.target
-[Service]
-ExecStart=/bin/bash /home/iwt/sense-connect/launcher.sh
-WorkingDirectory=/home/iwt/sense-connect
-Restart=always
-User=iwt
-Group=iwt
-[Install]
-WantedBy=multi-user.target
-EOL
-# Enable and start the service
-sudo systemctl enable sense-connect
-sudo systemctl start sense-connect
+# Add cron @reboot job to auto-launch launcher.sh on boot
+(crontab -l 2>/dev/null; echo "@reboot /bin/bash /home/iwt/sense-connect/launcher.sh") | crontab -
 
 echo "Setup complete."
 

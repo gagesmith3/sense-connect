@@ -17,9 +17,9 @@ class SensorManager:
         try:
             GPIO.setmode(GPIO.BCM)
             GPIO.setup(self.GPIOpin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-            print(f"SensorManager: GPIO pin {self.GPIOpin} initialized.")
+            pass
         except Exception as e:
-            print(f"SensorManager: GPIO init failed, entering backup mode. Error: {e}")
+            pass
             self.active = False
             self.backup_mode = True
 
@@ -30,16 +30,16 @@ class SensorManager:
                 if newState != self.oldState:
                     if newState == 1:
                         self.count += 1
-                        print(f"SensorManager: Count updated to {self.count}")
+                        pass
                     self.oldState = newState
             except Exception as e:
-                print(f"SensorManager: GPIO read failed, switching to backup mode. Error: {e}")
+                pass
                 self.active = False
                 self.backup_mode = True
         else:
             # Backup mode: hardcoded count logic
             self.count += self.config.backup_increment if hasattr(self.config, 'backup_increment') else 1
-            print(f"SensorManager: Backup mode count {self.count}")
+            pass
 
     def is_active(self):
         return self.active
