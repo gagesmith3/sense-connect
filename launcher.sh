@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /home/pi/sense-connect
+cd /home/iwt/sense-connect
 
 # Pull latest code
 if [ -d .git ]; then
