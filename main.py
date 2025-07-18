@@ -17,7 +17,7 @@ def show_dashboard(get_status_func):
 
     '''
     console.clear()
-    console.print(logo, style="bold green")
+    console.print(logo, style="bold purple")
     table = Table(title="Sense-Connect Debug Dashboard")
     table.add_column("Machine ID", justify="center")
     table.add_column("Online", justify="center")
@@ -107,6 +107,7 @@ def sensor_loop():
     while True:
         prev_count = sensor.count
         sensor.update_count()
+        print(f"[DEBUG] Sensor count after update: {sensor.count}")
         if sensor.count != prev_count:
             print(f"[DEBUG] Sending count {sensor.count} to socket service.")
         socket_client.send_live_count(sensor.count)
