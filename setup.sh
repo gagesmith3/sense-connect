@@ -54,13 +54,14 @@ sudo systemctl daemon-reload
 sudo systemctl restart getty@tty1
 
 # Add dashboard autolaunch to .bash_profile for user 'iwt' (only on tty1)
-PROFILE="/home/iwt/.bash_profile"
-if ! grep -q 'dashboard.py' "$PROFILE"; then
-    echo '' >> "$PROFILE"
-    echo 'if [ "$(tty)" = "/dev/tty1" ]; then' >> "$PROFILE"
-    echo '    /home/iwt/sense-connect/venv/bin/python /home/iwt/sense-connect/dashboard.py' >> "$PROFILE"
-    echo 'fi' >> "$PROFILE"
-fi
+for PROFILE in /home/iwt/.bash_profile /home/iwt/.profile; do
+    if ! grep -q 'dashboard.py' "$PROFILE"; then
+        echo '' >> "$PROFILE"
+        echo 'if [ "$(tty)" = "/dev/tty1" ]; then' >> "$PROFILE"
+        echo '    /home/iwt/sense-connect/venv/bin/python /home/iwt/sense-connect/dashboard.py' >> "$PROFILE"
+        echo 'fi' >> "$PROFILE"
+    fi
+done
 
 ### Removed deprecated wrapper.py launch
 
