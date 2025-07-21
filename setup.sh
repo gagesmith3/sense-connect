@@ -44,7 +44,15 @@ echo "[SETUP] Installing schedule..."
 pip install schedule && echo "[SETUP] schedule installed."
 echo "[SETUP] Installing from requirements.txt..."
 pip install -r requirements.txt && echo "[SETUP] requirements.txt installed."
+
 echo "[SETUP] All Python dependencies installed."
+
+# Ensure log files exist and are writable
+touch /home/iwt/sense-connect/main.log
+touch /home/iwt/sense-connect/dashboard.log
+chmod 664 /home/iwt/sense-connect/main.log /home/iwt/sense-connect/dashboard.log
+chown $(whoami):$(whoami) /home/iwt/sense-connect/main.log /home/iwt/sense-connect/dashboard.log
+echo "[SETUP] Log files main.log and dashboard.log created and permissions set."
 
 ### Make launcher.sh executable (use absolute path)
 chmod +x /home/iwt/sense-connect/launcher.sh
