@@ -57,11 +57,12 @@ def show_dashboard():
                                              
     '''
     
-    console.print(logo, style="bold purple")
+    
 
     with Live(console=console, refresh_per_second=2, screen=False) as live:
         while True:
             try:
+                console.print(logo, style="bold purple")
                 status = get_status()
                 conn_status = get_connection_status()
                 status_panel = render_status_panel(conn_status)
