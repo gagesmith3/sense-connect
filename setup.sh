@@ -1,7 +1,7 @@
 #!/bin/bash
 # sense-connect setup script for Raspberry Pi
 
-set -e
+#set -e
 
 # Update system packages
 sudo apt update
