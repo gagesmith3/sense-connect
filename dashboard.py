@@ -57,9 +57,8 @@ def show_dashboard():
                                              
     '''
     
-
-    console.print(logo, style="bold purple")
-    from rich.layout import Layout
+    from rich.panel import Panel
+    logo_panel = Panel(Text(logo, style="bold purple"), border_style="purple")
     with Live(console=console, refresh_per_second=2, screen=False) as live:
         while True:
             try:
@@ -77,12 +76,8 @@ def show_dashboard():
                     status['timestamp']
                 )
 
-                layout = Layout()
-                layout.split_column(
-                    Layout(status_panel, size=5),
-                    Layout(table)
-                )
-                live.update(layout)
+                # Stack logo, status panel, and table vertically
+                live.update([logo_panel, status_panel, table])
             except Exception as e:
                 console.print(f"[DASHBOARD ERROR] {e}", style="bold red")
             time.sleep(1)
