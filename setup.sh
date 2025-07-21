@@ -54,8 +54,19 @@ chmod 664 /home/iwt/sense-connect/main.log /home/iwt/sense-connect/dashboard.log
 chown $(whoami):$(whoami) /home/iwt/sense-connect/main.log /home/iwt/sense-connect/dashboard.log
 echo "[SETUP] Log files main.log and dashboard.log created and permissions set."
 
+
 ### Make launcher.sh executable (use absolute path)
 chmod +x /home/iwt/sense-connect/launcher.sh
+
+# Add auto-launch dashboard for SSH users in .bash_profile
+USER_HOME=$(eval echo ~$USER)
+DASHBOARD_LAUNCH="\n# Auto-run dashboard on SSH login (only for interactive shells)\nif [ -n \"\$SSH_CONNECTION\" ] && [ -t 1 ]; then\n    source /home/iwt/sense-connect/venv/bin/activate\n    python /home/iwt/sense-connect/dashboard.py\nfi\n"
+if ! grep -q 'Auto-run dashboard on SSH login' "$USER_HOME/.bash_profile" 2>/dev/null; then
+    echo -e "$DASHBOARD_LAUNCH" >> "$USER_HOME/.bash_profile"
+    echo "[SETUP] Added dashboard auto-launch to .bash_profile."
+else
+    echo "[SETUP] Dashboard auto-launch already present in .bash_profile."
+fi
 
 
 # Add cron @reboot job to auto-launch launcher.sh on boot
