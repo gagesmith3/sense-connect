@@ -8,16 +8,18 @@ if [ -d .git ]; then
 fi
 echo "[LAUNCHER] Git updated."
 
-# Activate virtual environment
-source venv/bin/activate
-echo "[LAUNCHER] Virtual environment activated."
+# Set TERM for rich/console apps
+export TERM=xterm
+
+# Use venv's python directly and log output
+VENV_PY="$(pwd)/venv/bin/python"
 
 # Run main.py
-python main.py &
+$VENV_PY main.py > main.log 2>&1 &
 echo "[LAUNCHER] main.py started."
 
 # Launch dashboard.py in tmux session (if not already running)
 if ! tmux has-session -t dashboard 2>/dev/null; then
-  tmux new-session -d -s dashboard "source venv/bin/activate && python dashboard.py"
+  tmux new-session -d -s dashboard "$VENV_PY dashboard.py > dashboard.log 2>&1"
 fi
 echo "[LAUNCHER] Dashboard launched in tmux session."
