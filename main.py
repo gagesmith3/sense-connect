@@ -56,16 +56,16 @@ def config_update_loop():
         config.update_from_server()
         time.sleep(config.config_update_interval)
 
-def hard_count_loop():
-    while True:
-        try:
-            db_manager.insert_sensor_data(config.machine_id, sensor.count)
-            flush_hard_count_cache()
-        except Exception as e:
-            print(f"Hard count upload failed, caching locally: {e}")
-            cache_hard_count(config.machine_id, sensor.count, int(time.time()))
-        sensor.reset_count()
-        time.sleep(60)
+# def hard_count_loop():
+#     while True:
+#         try:
+#             db_manager.insert_sensor_data(config.machine_id, sensor.count)
+#             flush_hard_count_cache()
+#         except Exception as e:
+#             print(f"Hard count upload failed, caching locally: {e}")
+#             cache_hard_count(config.machine_id, sensor.count, int(time.time()))
+#         sensor.reset_count()
+#         time.sleep(60)
 
 def health_report_loop():
     while True:
@@ -78,6 +78,6 @@ if __name__ == "__main__":
     #flush_hard_count_cache()
     threading.Thread(target=sensor_loop, daemon=True).start()
     threading.Thread(target=config_update_loop, daemon=True).start()
-    threading.Thread(target=hard_count_loop, daemon=True).start()
+    #threading.Thread(target=hard_count_loop, daemon=True).start()  # Disabled until hardcount is set up
     threading.Thread(target=health_report_loop, daemon=True).start()
     #show_dashboard(get_live_status)
