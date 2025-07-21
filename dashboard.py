@@ -2,6 +2,8 @@
 from rich.console import Console
 from rich.live import Live
 from rich.table import Table
+from rich.panel import Panel
+from rich.text import Text
 import time
 import json
 import os
@@ -25,6 +27,22 @@ def get_status():
             }
     return {'machine_id': '-', 'count': '-', 'timestamp': '-'}
 
+def get_connection_status():
+    # Replace these with real checks
+    return {
+        "DB": True,           # True = connected, False = disconnected
+        "WebSocket": False,   # Example status
+    }
+
+def render_status_panel(statuses):
+    status_text = ""
+    for name, connected in statuses.items():
+        indicator = "🟢" if connected else "🔴"
+        style = "bold green" if connected else "bold red"
+        status_text += f"[{style}]{indicator} {name}[/]\n"
+    panel = Panel(Text(status_text, justify="center"), title="Connection Status", border_style="magenta")
+    return panel
+
 def show_dashboard():
     logo = '''
    __________________________________________
@@ -36,19 +54,32 @@ def show_dashboard():
     '''
     console.clear()
     console.print(logo, style="bold purple")
-    table = Table(title="Sense-Connect CLI Dashboard")
-    table.add_column("Machine ID", justify="center")
-    table.add_column("Count", justify="center")
-    table.add_column("Last Update", justify="center")
-    with Live(table, refresh_per_second=2):
+
+    with Live(console=console, refresh_per_second=2, screen=False) as live:
         while True:
             status = get_status()
-            table.rows.clear()
+            conn_status = get_connection_status()
+            status_panel = render_status_panel(conn_status)
+
+            table = Table(title="Sense-Connect CLI Dashboard")
+            table.add_column("Machine ID", justify="center")
+            table.add_column("Count", justify="center")
+            table.add_column("Last Update", justify="center")
             table.add_row(
                 str(status['machine_id']),
                 str(status['count']),
                 status['timestamp']
             )
+
+            # Group the status panel and table
+            from rich.layout import Layout
+            layout = Layout()
+            layout.split_column(
+                Layout(status_panel, size=5),
+                Layout(table)
+            )
+
+            live.update(layout)
             time.sleep(1)
 
 if __name__ == "__main__":

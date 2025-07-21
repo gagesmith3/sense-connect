@@ -35,24 +35,7 @@ socket_client = SocketIOClient(config)
 # Initialize database manager
 db_manager = DatabaseManager(config)
 
-# Local cache for hard counts
-#HARD_COUNT_CACHE = 'hard_count_cache.json'
-#def cache_hard_count(machine_id, count, timestamp):
-    #cache = []
-    #if os.path.exists(HARD_COUNT_CACHE):
-       # with open(HARD_COUNT_CACHE, 'r') as f:
-           # cache = json.load(f)
-   # cache.append({'machine_id': machine_id, 'count': count, 'timestamp': timestamp})
-   # with open(HARD_COUNT_CACHE, 'w') as f:
-       # json.dump(cache, f)
 
-#def flush_hard_count_cache():
-    #if os.path.exists(HARD_COUNT_CACHE):
-        #with open(HARD_COUNT_CACHE, 'r') as f:
-            #cache = json.load(f)
-       # for entry in cache:
-            #db_manager.insert_sensor_data(entry['machine_id'], entry['count'], entry['timestamp'])
-        #os.remove(HARD_COUNT_CACHE)
 
 
 def sensor_loop():

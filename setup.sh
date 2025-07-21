@@ -6,6 +6,8 @@ set -e
 # Update system packages
 sudo apt update
 sudo apt install -y git python3 python3-pip libpq-dev
+# Install tmux for session management
+sudo apt install -y tmux
 
 # Navigate to project directory (edit path if needed)
 cd "$(dirname "$0")"
@@ -15,9 +17,10 @@ if [ -d .git ]; then
     git pull
 fi
 
-
-# Create and activate Python virtual environment
-python3 -m venv venv
+### Create Python virtual environment if not exists
+if [ ! -d venv ]; then
+    python3 -m venv venv
+fi
 source venv/bin/activate
 
 # Install Python dependencies in the virtual environment
@@ -28,22 +31,20 @@ pip install requests
 pip install rich
 pip install -r requirements.txt
 
-### Ensure launcher.sh activates venv before running main.py
-cat > /home/iwt/sense-connect/launcher.sh <<'EOF'
-#!/bin/bash
-source /home/iwt/sense-connect/venv/bin/activate
-python /home/iwt/sense-connect/main.py
-EOF
+### Make launcher.sh executable (use absolute path)
 chmod +x /home/iwt/sense-connect/launcher.sh
 
-# Make launcher.sh executable
 # Add cron @reboot job to auto-launch launcher.sh on boot
-(crontab -l 2>/dev/null; echo "@reboot /bin/bash /home/iwt/sense-connect/launcher.sh") | crontab -
+# Remove any previous @reboot jobs for launcher.sh
+crontab -l 2>/dev/null | grep -v 'launcher.sh' > tempcron
+# Add launcher.sh to run on boot via cron
+echo "@reboot /bin/bash /home/iwt/sense-connect/launcher.sh" >> tempcron
+crontab tempcron
+rm tempcron
 
-echo "Setup complete."
 
 
-# Enable console auto-login for user 'iwt'
+### Enable console auto-login for user 'iwt'
 sudo mkdir -p /etc/systemd/system/getty@tty1.service.d
 sudo tee /etc/systemd/system/getty@tty1.service.d/autologin.conf > /dev/null <<EOL
 [Service]
@@ -53,15 +54,4 @@ EOL
 sudo systemctl daemon-reload
 sudo systemctl restart getty@tty1
 
-# Add dashboard autolaunch to .bash_profile for user 'iwt' (only on tty1)
-for PROFILE in /home/iwt/.bash_profile /home/iwt/.profile; do
-    if ! grep -q 'dashboard.py' "$PROFILE"; then
-        echo '' >> "$PROFILE"
-        echo 'if [ "$(tty)" = "/dev/tty1" ]; then' >> "$PROFILE"
-        echo '    /home/iwt/sense-connect/venv/bin/python /home/iwt/sense-connect/dashboard.py' >> "$PROFILE"
-        echo 'fi' >> "$PROFILE"
-    fi
-done
-
-### Removed deprecated wrapper.py launch
-
+echo "Setup complete."

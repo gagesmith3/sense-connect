@@ -9,9 +9,10 @@ fi
 # Activate virtual environment
 source venv/bin/activate
 
-# Launch main.py
-python main.py
+# Run main.py
+python main.py &
 
-sleep 10
-
-python dashboard.py
+# Launch dashboard.py in tmux session (if not already running)
+if ! tmux has-session -t dashboard 2>/dev/null; then
+  tmux new-session -d -s dashboard "source venv/bin/activate && python dashboard.py"
+fi
