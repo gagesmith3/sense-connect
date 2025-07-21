@@ -59,10 +59,10 @@ def show_dashboard():
     
     
 
+    from rich.group import Group
     with Live(console=console, refresh_per_second=2, screen=False) as live:
         while True:
             try:
-                console.print(logo, style="bold purple")
                 status = get_status()
                 conn_status = get_connection_status()
                 status_panel = render_status_panel(conn_status)
@@ -77,15 +77,13 @@ def show_dashboard():
                     status['timestamp']
                 )
 
-                # Group the status panel and table
-                from rich.layout import Layout
-                layout = Layout()
-                layout.split_column(
-                    Layout(status_panel, size=5),
-                    Layout(table)
+                # Group the logo, status panel, and table together
+                group = Group(
+                    Text(logo, style="bold purple"),
+                    status_panel,
+                    table
                 )
-
-                live.update(layout)
+                live.update(group)
             except Exception as e:
                 console.print(f"[DASHBOARD ERROR] {e}", style="bold red")
             time.sleep(1)
