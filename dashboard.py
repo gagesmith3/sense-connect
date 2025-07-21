@@ -89,6 +89,20 @@ def show_dashboard():
         table.add_row("Timestamp", status['timestamp'])
         return Panel(table, padding=(1,2))
 
+    def make_raw_output_panel():
+        log_file = "main.log"
+        lines = []
+        if os.path.exists(log_file):
+            try:
+                with open(log_file, "r") as f:
+                    lines = f.readlines()[-10:]
+            except Exception as e:
+                lines = [f"[ERROR] Could not read log: {e}"]
+        else:
+            lines = ["[main.log not found]"]
+        raw_text = "".join(lines).strip()
+        return Panel(Text(raw_text, style="white"), title="Raw Output (main.py)", border_style="blue", box=ROUNDED, padding=(1,2))
+
     def make_footer():
         now = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
         return Panel(Align.center(f"[bold white]Sense-Connect Dashboard | Last refresh: {now}"), border_style="grey37", box=ROUNDED)
@@ -101,6 +115,7 @@ def show_dashboard():
                 layout.split_column(
                     Layout(name="header", size=7),
                     Layout(name="body", ratio=2),
+                    Layout(name="raw_output", size=8),
                     Layout(name="footer", size=3)
                 )
                 layout["body"].split_row(
@@ -115,6 +130,7 @@ def show_dashboard():
                 )
                 layout["main"]["summary"].update(make_summary_panel(status))
                 layout["main"]["table"].update(make_table(status))
+                layout["raw_output"].update(make_raw_output_panel())
                 layout["footer"].update(make_footer())
                 live.update(layout)
             except Exception as e:

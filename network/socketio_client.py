@@ -90,3 +90,5 @@ class SocketIOClient:
         elif not self.last_connection_error_logged:
             self.last_connection_error_logged = True
             pass
+    def is_connected(self):
+        return self.connected
