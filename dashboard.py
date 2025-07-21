@@ -4,7 +4,6 @@ from rich.live import Live
 from rich.table import Table
 from rich.panel import Panel
 from rich.text import Text
-from rich.console import Group
 import time
 import json
 import os
@@ -58,9 +57,9 @@ def show_dashboard():
                                              
     '''
     
-    
 
-    from rich.group import Group
+    console.print(logo, style="bold purple")
+    from rich.layout import Layout
     with Live(console=console, refresh_per_second=2, screen=False) as live:
         while True:
             try:
@@ -78,13 +77,12 @@ def show_dashboard():
                     status['timestamp']
                 )
 
-                # Group the logo, status panel, and table together
-                group = Group(
-                    Text(logo, style="bold purple"),
-                    status_panel,
-                    table
+                layout = Layout()
+                layout.split_column(
+                    Layout(status_panel, size=5),
+                    Layout(table)
                 )
-                live.update(group)
+                live.update(layout)
             except Exception as e:
                 console.print(f"[DASHBOARD ERROR] {e}", style="bold red")
             time.sleep(1)
