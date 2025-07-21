@@ -38,6 +38,17 @@ db_manager = DatabaseManager(config)
 
 
 
+def write_connection_status():
+    status = {
+        "DB": db_manager.is_connected() if hasattr(db_manager, "is_connected") else True,
+        "WebSocket": socket_client.is_connected() if hasattr(socket_client, "is_connected") else False
+    }
+    try:
+        with open("connection_status.json", "w") as f:
+            json.dump(status, f)
+    except Exception as e:
+        print(f"[ERROR] Could not write connection status: {e}")
+
 def sensor_loop():
     while True:
         prev_count = sensor.count
@@ -46,6 +57,7 @@ def sensor_loop():
         if sensor.count != prev_count:
             print(f"[DEBUG] Sending count {sensor.count} to socket service.")
         socket_client.send_live_count(sensor.count)
+        write_connection_status()
         if not sensor.is_active():
             #alert_manager.send_downtime_alert()
             time.sleep(config.sensor_poll_interval)

@@ -29,11 +29,19 @@ def get_status():
     return {'machine_id': '-', 'count': '-', 'timestamp': '-'}
 
 def get_connection_status():
-    # Replace with real checks if available
-    return {
-        "DB": True,
-        "WebSocket": False,
-    }
+    status_file = "connection_status.json"
+    if os.path.exists(status_file):
+        try:
+            with open(status_file, "r") as f:
+                status = json.load(f)
+            # Ensure both keys exist
+            return {
+                "DB": status.get("DB", False),
+                "WebSocket": status.get("WebSocket", False)
+            }
+        except Exception as e:
+            return {"DB": False, "WebSocket": False}
+    return {"DB": False, "WebSocket": False}
 
 
 def show_dashboard():
@@ -62,23 +70,24 @@ def show_dashboard():
             Align.left("\n".join(status_lines)),
             title="Connections",
             border_style="magenta",
-            width=20,
-            box=ROUNDED
+            width=22,
+            box=ROUNDED,
+            padding=(1,2)
         )
         return sidebar_panel
 
     def make_summary_panel(status):
         summary = f"[bold cyan]Machine:[/] {status['machine_id']}\n[bold yellow]Count:[/] {status['count']}"
-        return Panel(Align.center(summary), title="Summary", border_style="cyan", box=ROUNDED)
+        return Panel(Align.center(summary), title="Summary", border_style="cyan", box=ROUNDED, padding=(1,2))
 
     def make_table(status):
-        table = Table(title="Recent Update", box=ROUNDED)
+        table = Table(title="Recent Update", box=ROUNDED, pad_edge=True)
         table.add_column("Field", justify="right")
         table.add_column("Value", justify="left")
         table.add_row("Machine ID", str(status['machine_id']))
         table.add_row("Count", str(status['count']))
         table.add_row("Timestamp", status['timestamp'])
-        return table
+        return Panel(table, padding=(1,2))
 
     def make_footer():
         now = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
