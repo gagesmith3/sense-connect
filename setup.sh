@@ -24,13 +24,27 @@ fi
 source venv/bin/activate
 
 # Install Python dependencies in the virtual environment
-pip install --upgrade pip
-pip install python-socketio==5.11.2
-pip install PyJWT
-pip install requests
-pip install rich
-pip install -r requirements.txt
-echo "[SETUP] Python dependencies installed."
+echo "[SETUP] Upgrading pip..."
+pip install --upgrade pip && echo "[SETUP] pip upgraded."
+echo "[SETUP] Installing python-socketio..."
+pip install python-socketio==5.11.2 && echo "[SETUP] python-socketio installed."
+echo "[SETUP] Installing PyJWT..."
+pip install PyJWT && echo "[SETUP] PyJWT installed."
+echo "[SETUP] Installing requests..."
+pip install requests && echo "[SETUP] requests installed."
+echo "[SETUP] Installing rich..."
+pip install rich && echo "[SETUP] rich installed."
+echo "[SETUP] Installing RPi.GPIO..."
+pip install RPi.GPIO && echo "[SETUP] RPi.GPIO installed."
+echo "[SETUP] Installing python-socketio (again, if needed)..."
+pip install python-socketio==5.11.2 && echo "[SETUP] python-socketio (again) installed."
+echo "[SETUP] Installing psycopg2..."
+pip install psycopg2 && echo "[SETUP] psycopg2 installed."
+echo "[SETUP] Installing schedule..."
+pip install schedule && echo "[SETUP] schedule installed."
+echo "[SETUP] Installing from requirements.txt..."
+pip install -r requirements.txt && echo "[SETUP] requirements.txt installed."
+echo "[SETUP] All Python dependencies installed."
 
 ### Make launcher.sh executable (use absolute path)
 chmod +x /home/iwt/sense-connect/launcher.sh
