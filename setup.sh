@@ -30,9 +30,11 @@ pip install PyJWT
 pip install requests
 pip install rich
 pip install -r requirements.txt
+echo "[SETUP] Python dependencies installed."
 
 ### Make launcher.sh executable (use absolute path)
 chmod +x /home/iwt/sense-connect/launcher.sh
+
 
 # Add cron @reboot job to auto-launch launcher.sh on boot
 # Remove any previous @reboot jobs for launcher.sh
@@ -41,7 +43,7 @@ crontab -l 2>/dev/null | grep -v 'launcher.sh' > tempcron
 echo "@reboot /bin/bash /home/iwt/sense-connect/launcher.sh" >> tempcron
 crontab tempcron
 rm tempcron
-
+echo "[SETUP] Cron job added to run launcher.sh on boot."
 
 
 ### Enable console auto-login for user 'iwt'
@@ -54,4 +56,4 @@ EOL
 sudo systemctl daemon-reload
 sudo systemctl restart getty@tty1
 
-echo "Setup complete."
+echo "[SETUP] Setup complete."
