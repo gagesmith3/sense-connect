@@ -49,6 +49,7 @@ class SocketIOClient:
         def connect():
             self.connected = True
             self.last_connection_error_logged = False
+            print(f"[SocketIO] Connected to {self.server_url}")
             self.sio.emit('test', {'message': 'Hello from RPi'})
             self.send_header_status('ONLINE')
             self.send_header_update(0)
@@ -56,15 +57,18 @@ class SocketIOClient:
         @self.sio.event
         def disconnect():
             self.connected = False
+            print(f"[SocketIO] Disconnected from {self.server_url}")
             self.send_header_status('OFFLINE')
 
         @self.sio.event
         def connect_error(data):
+            print(f"[SocketIO] Connection error: {data}")
             if not self.last_connection_error_logged:
                 self.last_connection_error_logged = True
 
         @self.sio.on('config_update')
         def on_config_update(data):
+            print(f"[SocketIO] Received config update: {data}")
             self.config.update_from_server(data)
 
     def _connect(self):
@@ -73,10 +77,12 @@ class SocketIOClient:
                 try:
                     payload = {'machine_id': getattr(self.config, 'machine_id', 'test-machine')}
                     token = jwt.encode(payload, self.jwt_secret, algorithm='HS256')
+                    print(f"[SocketIO] Attempting connection to {self.server_url} with JWT: {token}")
                     self.sio.connect(self.server_url, auth={'token': token})
+                    print(f"[SocketIO] Connection established.")
                     break
                 except Exception as e:
-                    pass
+                    print(f"[SocketIO] Connection failed: {e}")
                     time.sleep(5)
         threading.Thread(target=run, daemon=True).start()
 
