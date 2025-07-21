@@ -81,3 +81,10 @@ if __name__ == "__main__":
     #threading.Thread(target=hard_count_loop, daemon=True).start()  # Disabled until hardcount is set up
     threading.Thread(target=health_report_loop, daemon=True).start()
     #show_dashboard(get_live_status)
+
+    # Keep main thread alive to prevent daemon thread shutdown errors
+    try:
+        while True:
+            time.sleep(60)
+    except KeyboardInterrupt:
+        print("Exiting Sense-Connect main process.")
