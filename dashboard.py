@@ -35,46 +35,82 @@ def get_connection_status():
         "WebSocket": False,
     }
 
+
 def show_dashboard():
-    logo = '''
+    from rich.layout import Layout
+    from rich.align import Align
+    from rich.box import ROUNDED
+
+    logo = """
    __________________________________________
   / ____/ __ \/ | / / | / / ____/ ____/_  __/
  / /   / / / /  |/ /  |/ / __/ / /     / /   
 / /___/ /_/ / /|  / /|  / /___/ /___  / /    
 \____/\____/_/ |_/_/ |_/_____/______//_/     
                                              
-    '''
-    logo_panel = Panel(Text(logo, style="bold purple"), border_style="purple")
+    """
+    logo_panel = Panel(Align.center(Text(logo, style="bold purple")), border_style="purple", box=ROUNDED)
 
-    with Live(console=console, refresh_per_second=2, screen=False) as live:
+    def make_sidebar():
+        conn_status = get_connection_status()
+        status_lines = []
+        for name, connected in conn_status.items():
+            indicator = "🟢" if connected else "🔴"
+            style = "bold green" if connected else "bold red"
+            status_lines.append(f"[{style}]{indicator}[/] {name}")
+        sidebar_panel = Panel(
+            Align.left("\n".join(status_lines)),
+            title="Connections",
+            border_style="magenta",
+            width=20,
+            box=ROUNDED
+        )
+        return sidebar_panel
+
+    def make_summary_panel(status):
+        summary = f"[bold cyan]Machine:[/] {status['machine_id']}\n[bold yellow]Count:[/] {status['count']}"
+        return Panel(Align.center(summary), title="Summary", border_style="cyan", box=ROUNDED)
+
+    def make_table(status):
+        table = Table(title="Recent Update", box=ROUNDED)
+        table.add_column("Field", justify="right")
+        table.add_column("Value", justify="left")
+        table.add_row("Machine ID", str(status['machine_id']))
+        table.add_row("Count", str(status['count']))
+        table.add_row("Timestamp", status['timestamp'])
+        return table
+
+    def make_footer():
+        now = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+        return Panel(Align.center(f"[bold white]Sense-Connect Dashboard | Last refresh: {now}"), border_style="grey37", box=ROUNDED)
+
+    with Live(console=console, refresh_per_second=2, screen=True) as live:
         while True:
             try:
-                # Connection status panel
-                conn_status = get_connection_status()
-                status_text = ""
-                for name, connected in conn_status.items():
-                    indicator = "🟢" if connected else "🔴"
-                    style = "bold green" if connected else "bold red"
-                    status_text += f"[{style}]{indicator} {name}[/]  "
-                status_panel = Panel(Text(status_text, justify="center"), title="Connection Status", border_style="magenta")
-
-                # Main data table
                 status = get_status()
-                table = Table(title="Sense-Connect CLI Dashboard")
-                table.add_column("Machine ID", justify="center")
-                table.add_column("Count", justify="center")
-                table.add_column("Last Update", justify="center")
-                table.add_row(
-                    str(status['machine_id']),
-                    str(status['count']),
-                    status['timestamp']
+                layout = Layout()
+                layout.split_column(
+                    Layout(name="header", size=7),
+                    Layout(name="body", ratio=2),
+                    Layout(name="footer", size=3)
                 )
-
-                # Stack logo, status panel, and table vertically
-                live.update([logo_panel, status_panel, table])
+                layout["body"].split_row(
+                    Layout(name="sidebar", size=22),
+                    Layout(name="main", ratio=2)
+                )
+                layout["header"].update(logo_panel)
+                layout["sidebar"].update(make_sidebar())
+                layout["main"].split_column(
+                    Layout(name="summary", size=5),
+                    Layout(name="table", ratio=2)
+                )
+                layout["main"]["summary"].update(make_summary_panel(status))
+                layout["main"]["table"].update(make_table(status))
+                layout["footer"].update(make_footer())
+                live.update(layout)
             except Exception as e:
-                error_panel = Panel(Text(f"[DASHBOARD ERROR] {e}", style="bold red"), border_style="red")
-                live.update([logo_panel, error_panel])
+                error_panel = Panel(Text(f"[DASHBOARD ERROR] {e}", style="bold red"), border_style="red", box=ROUNDED)
+                live.update(error_panel)
             time.sleep(1)
 
 if __name__ == "__main__":
