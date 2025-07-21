@@ -12,6 +12,7 @@ import os
 HARD_COUNT_CACHE = 'hard_count_cache.json'
 
 console = Console()
+console.clear()
 
 def get_status():
     # Try to read latest status from cache
@@ -55,7 +56,7 @@ def show_dashboard():
 \____/\____/_/ |_/_/ |_/_____/______//_/     
                                              
     '''
-    console.clear()
+    
     console.print(logo, style="bold purple")
 
     with Live(console=console, refresh_per_second=2, screen=False) as live:
