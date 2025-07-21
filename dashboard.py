@@ -4,7 +4,7 @@ from rich.live import Live
 from rich.table import Table
 from rich.panel import Panel
 from rich.text import Text
-from rich.group import Group
+from rich.console import Group
 import time
 import json
 import os
