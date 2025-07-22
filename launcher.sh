@@ -9,7 +9,7 @@ fi
 echo "[LAUNCHER] Git updated."
 
 # Set TERM for rich/console apps
-export TERM=xterm
+#export TERM=xterm
 
 # Use venv's python directly and log output
 VENV_PY="$(pwd)/venv/bin/python"
