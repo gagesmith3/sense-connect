@@ -1,4 +1,3 @@
-
 # Sense-Connect CLI Dashboard (refactored)
 import time
 import json
@@ -8,11 +7,26 @@ from rich.live import Live
 from rich.table import Table
 from rich.panel import Panel
 from rich.text import Text
+from rich.layout import Layout
+from rich.align import Align
+from rich.box import ROUNDED
 
 HARD_COUNT_CACHE = 'hard_count_cache.json'
 console = Console()
 
 def get_status():
+    config_file = "config/config.json"  # <-- updated path
+    machine_id = "-"
+    # Try to read machine_id from config/config.json
+    if os.path.exists(config_file):
+        try:
+            with open(config_file, "r") as f:
+                config = json.load(f)
+            machine_id = config.get("machine_id", "-")
+        except Exception as e:
+            machine_id = f"ERROR: {e}"
+
+    # Then read the latest count/timestamp from hard_count_cache.json
     try:
         if os.path.exists(HARD_COUNT_CACHE):
             with open(HARD_COUNT_CACHE, 'r') as f:
@@ -20,13 +34,13 @@ def get_status():
             if cache and isinstance(cache, list) and len(cache) > 0:
                 latest = cache[-1]
                 return {
-                    'machine_id': latest.get('machine_id', '-'),
+                    'machine_id': machine_id if machine_id != "-" else latest.get('machine_id', '-'),
                     'count': latest.get('count', '-'),
                     'timestamp': time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(latest.get('timestamp', time.time())))
                 }
     except Exception as e:
-        return {'machine_id': 'ERROR', 'count': 'ERROR', 'timestamp': str(e)}
-    return {'machine_id': '-', 'count': '-', 'timestamp': '-'}
+        return {'machine_id': machine_id, 'count': 'ERROR', 'timestamp': str(e)}
+    return {'machine_id': machine_id, 'count': '-', 'timestamp': '-'}
 
 def get_connection_status():
     status_file = "connection_status.json"
@@ -34,7 +48,6 @@ def get_connection_status():
         try:
             with open(status_file, "r") as f:
                 status = json.load(f)
-            # Ensure both keys exist
             return {
                 "DB": status.get("DB", False),
                 "WebSocket": status.get("WebSocket", False)
@@ -43,21 +56,14 @@ def get_connection_status():
             return {"DB": False, "WebSocket": False}
     return {"DB": False, "WebSocket": False}
 
-
 def show_dashboard():
-    from rich.layout import Layout
-    from rich.align import Align
-    from rich.box import ROUNDED
-
     logo = """
    __________________________________________
   / ____/ __ \/ | / / | / / ____/ ____/_  __/
  / /   / / / /  |/ /  |/ / __/ / /     / /   
 / /___/ /_/ / /|  / /|  / /___/ /___  / /    
 \____/\____/_/ |_/_/ |_/_____/______//_/     
-                                             
     """
-    logo_panel = Panel(Align.center(Text(logo, style="bold purple")), border_style="purple", box=ROUNDED)
 
     def make_sidebar():
         conn_status = get_connection_status()
@@ -78,7 +84,13 @@ def show_dashboard():
 
     def make_summary_panel(status):
         summary = f"[bold cyan]Machine:[/] {status['machine_id']}\n[bold yellow]Count:[/] {status['count']}"
-        return Panel(Align.center(summary), title="Summary", border_style="cyan", box=ROUNDED, padding=(1,2))
+        return Panel(
+            Align.center(summary),
+            title="Summary",
+            border_style="cyan",
+            box=ROUNDED,
+            padding=(1,2)
+        )
 
     def make_table(status):
         table = Table(title="Recent Update", box=ROUNDED, pad_edge=True)
@@ -101,11 +113,23 @@ def show_dashboard():
         else:
             lines = ["[main.log not found]"]
         raw_text = "".join(lines).strip()
-        return Panel(Text(raw_text, style="white"), title="Raw Output (main.py)", border_style="blue", box=ROUNDED, padding=(1,2))
+        return Panel(
+            Text(raw_text, style="white"),
+            title="Raw Output (main.py)",
+            border_style="green",
+            box=ROUNDED,
+            padding=(1,2)
+        )
 
     def make_footer():
         now = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-        return Panel(Align.center(f"[bold white]Sense-Connect Dashboard | Last refresh: {now}"), border_style="grey37", box=ROUNDED)
+        return Panel(
+            Align.center(f"[bold white]Sense-Connect Dashboard | Last refresh: {now}"),
+            border_style="grey37",
+            box=ROUNDED
+        )
+
+    logo_panel = Panel(Align.center(Text(logo, style="bold purple")), border_style="purple", box=ROUNDED)
 
     with Live(console=console, refresh_per_second=2, screen=True) as live:
         while True:
