@@ -42,8 +42,6 @@ echo "[SETUP] Installing psycopg2..."
 pip install psycopg2 && echo "[SETUP] psycopg2 installed."
 echo "[SETUP] Installing schedule..."
 pip install schedule && echo "[SETUP] schedule installed."
-echo "[SETUP] Installing from requirements.txt..."
-pip install -r requirements.txt && echo "[SETUP] requirements.txt installed."
 
 echo "[SETUP] All Python dependencies installed."
 
